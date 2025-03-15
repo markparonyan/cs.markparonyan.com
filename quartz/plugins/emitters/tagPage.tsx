@@ -71,7 +71,8 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = (userOpts) 
 
       return graph
     },
-    async *emit(ctx, content, resources) {
+    async emit(ctx, content, resources): Promise<FilePath[]> {
+      const fps: FilePath[] = []
       const allFiles = content.map((c) => c[1].data)
       const cfg = ctx.cfg.configuration
 
@@ -104,17 +105,14 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = (userOpts) 
           const tag = slug.slice("tags/".length)
           if (tags.has(tag)) {
             tagDescriptions[tag] = [tree, file]
-            if (file.data.frontmatter?.title === tag) {
-              file.data.frontmatter.title = `${i18n(cfg.locale).pages.tagContent.tag}: ${tag}`
-            }
           }
         }
       }
 
       for (const tag of tags) {
         const slug = joinSegments("tags", tag) as FullSlug
+        const externalResources = pageResources(pathToRoot(slug), resources)
         const [tree, file] = tagDescriptions[tag]
-        const externalResources = pageResources(pathToRoot(slug), file.data, resources)
         const componentData: QuartzComponentProps = {
           ctx,
           fileData: file.data,
@@ -126,13 +124,16 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = (userOpts) 
         }
 
         const content = renderPage(cfg, slug, componentData, opts, externalResources)
-        yield write({
+        const fp = await write({
           ctx,
           content,
           slug: file.data.slug!,
           ext: ".html",
         })
+
+        fps.push(fp)
       }
+      return fps
     },
   }
 }

@@ -2,17 +2,17 @@ import { render } from "preact-render-to-string"
 import { QuartzComponent, QuartzComponentProps } from "./types"
 import HeaderConstructor from "./Header"
 import BodyConstructor from "./Body"
+import NavbarContructor from "./Navbar";
 import { JSResourceToScriptElement, StaticResources } from "../util/resources"
-import { FullSlug, RelativeURL, joinSegments, normalizeHastElement } from "../util/path"
-import { clone } from "../util/clone"
+import { clone, FullSlug, RelativeURL, joinSegments, normalizeHastElement } from "../util/path"
 import { visit } from "unist-util-visit"
 import { Root, Element, ElementContent } from "hast"
 import { GlobalConfiguration } from "../cfg"
 import { i18n } from "../i18n"
-import { QuartzPluginData } from "../plugins/vfile"
 
 interface RenderComponents {
   head: QuartzComponent
+  navbar: QuartzComponent[]
   header: QuartzComponent[]
   beforeBody: QuartzComponent[]
   pageBody: QuartzComponent
@@ -25,13 +25,12 @@ interface RenderComponents {
 const headerRegex = new RegExp(/h[1-6]/)
 export function pageResources(
   baseDir: FullSlug | RelativeURL,
-  fileData: QuartzPluginData,
   staticResources: StaticResources,
 ): StaticResources {
   const contentIndexPath = joinSegments(baseDir, "static/contentIndex.json")
   const contentIndexScript = `const fetchData = fetch("${contentIndexPath}").then(data => data.json())`
 
-  const resources: StaticResources = {
+  return {
     css: [
       {
         content: joinSegments(baseDir, "index.css"),
@@ -51,18 +50,14 @@ export function pageResources(
         script: contentIndexScript,
       },
       ...staticResources.js,
+      {
+        src: joinSegments(baseDir, "postscript.js"),
+        loadTime: "afterDOMReady",
+        moduleType: "module",
+        contentType: "external",
+      },
     ],
-    additionalHead: staticResources.additionalHead,
   }
-
-  resources.js.push({
-    src: joinSegments(baseDir, "postscript.js"),
-    loadTime: "afterDOMReady",
-    moduleType: "module",
-    contentType: "external",
-  })
-
-  return resources
 }
 
 export function renderPage(
@@ -197,6 +192,7 @@ export function renderPage(
 
   const {
     head: Head,
+    navbar,
     header,
     beforeBody,
     pageBody: Content,
@@ -207,6 +203,7 @@ export function renderPage(
   } = components
   const Header = HeaderConstructor()
   const Body = BodyConstructor()
+  const Navbar = NavbarContructor()
 
   const LeftComponent = (
     <div class="left sidebar">
@@ -230,6 +227,11 @@ export function renderPage(
       <Head {...componentData} />
       <body data-slug={slug}>
         <div id="quartz-root" class="page">
+          <Navbar {...componentData}>
+            {navbar.map((NavbarComponent) => (
+              <NavbarComponent displayClass="nav-link" {...componentData} />
+            ))}
+            </Navbar>
           <Body {...componentData}>
             {LeftComponent}
             <div class="center">

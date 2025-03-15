@@ -15,6 +15,9 @@ const filesToCopy = async (argv: Argv, cfg: QuartzConfig) => {
 export const Assets: QuartzEmitterPlugin = () => {
   return {
     name: "Assets",
+    getQuartzComponents() {
+      return []
+    },
     async getDependencyGraph(ctx, _content, _resources) {
       const { argv, cfg } = ctx
       const graph = new DepGraph<FilePath>()
@@ -33,9 +36,10 @@ export const Assets: QuartzEmitterPlugin = () => {
 
       return graph
     },
-    async *emit({ argv, cfg }, _content, _resources) {
+    async emit({ argv, cfg }, _content, _resources): Promise<FilePath[]> {
       const assetsPath = argv.output
       const fps = await filesToCopy(argv, cfg)
+      const res: FilePath[] = []
       for (const fp of fps) {
         const ext = path.extname(fp)
         const src = joinSegments(argv.directory, fp) as FilePath
@@ -45,8 +49,10 @@ export const Assets: QuartzEmitterPlugin = () => {
         const dir = path.dirname(dest) as FilePath
         await fs.promises.mkdir(dir, { recursive: true }) // ensure dir exists
         await fs.promises.copyFile(src, dest)
-        yield dest
+        res.push(dest)
       }
+
+      return res
     },
   }
 }

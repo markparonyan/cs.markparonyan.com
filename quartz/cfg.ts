@@ -61,6 +61,10 @@ export interface GlobalConfiguration {
    *   Quartz will avoid using this as much as possible and use relative URLs most of the time
    */
   baseUrl?: string
+  /**
+   * Whether to generate social images (Open Graph and Twitter standard) for link previews
+   */
+  generateSocialImages: boolean | Partial<SocialImageOptions>
   theme: Theme
   /**
    * Allow to translate the date in the language of your choice.
@@ -80,6 +84,7 @@ export interface QuartzConfig {
 
 export interface FullPageLayout {
   head: QuartzComponent
+  navbar: QuartzComponent[]
   header: QuartzComponent[]
   beforeBody: QuartzComponent[]
   pageBody: QuartzComponent
@@ -90,4 +95,4 @@ export interface FullPageLayout {
 }
 
 export type PageLayout = Pick<FullPageLayout, "beforeBody" | "left" | "right">
-export type SharedLayout = Pick<FullPageLayout, "head" | "header" | "footer" | "afterBody">
+export type SharedLayout = Pick<FullPageLayout, "head" | "navbar" | "header" | "footer" | "afterBody">

@@ -19,7 +19,6 @@ import { options } from "./util/sourcemap"
 import { Mutex } from "async-mutex"
 import DepGraph from "./depgraph"
 import { getStaticResourcesFromPlugins } from "./plugins"
-import { randomIdNonSecure } from "./util/random"
 
 type Dependencies = Record<string, DepGraph<FilePath> | null>
 
@@ -39,9 +38,13 @@ type BuildData = {
 
 type FileEvent = "add" | "change" | "delete"
 
+function newBuildId() {
+  return Math.random().toString(36).substring(2, 8)
+}
+
 async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
   const ctx: BuildCtx = {
-    buildId: randomIdNonSecure(),
+    buildId: newBuildId(),
     argv,
     cfg,
     allSlugs: [],
@@ -136,9 +139,9 @@ async function startServing(
 
   const buildFromEntry = argv.fastRebuild ? partialRebuildFromEntrypoint : rebuildFromEntrypoint
   watcher
-    .on("add", (fp) => buildFromEntry(fp as string, "add", clientRefresh, buildData))
-    .on("change", (fp) => buildFromEntry(fp as string, "change", clientRefresh, buildData))
-    .on("unlink", (fp) => buildFromEntry(fp as string, "delete", clientRefresh, buildData))
+    .on("add", (fp) => buildFromEntry(fp, "add", clientRefresh, buildData))
+    .on("change", (fp) => buildFromEntry(fp, "change", clientRefresh, buildData))
+    .on("unlink", (fp) => buildFromEntry(fp, "delete", clientRefresh, buildData))
 
   return async () => {
     await watcher.close()
@@ -159,7 +162,7 @@ async function partialRebuildFromEntrypoint(
     return
   }
 
-  const buildId = randomIdNonSecure()
+  const buildId = newBuildId()
   ctx.buildId = buildId
   buildData.lastBuildMs = new Date().getTime()
   const release = await mut.acquire()
@@ -250,25 +253,15 @@ async function partialRebuildFromEntrypoint(
         ([_node, vfile]) => !toRemove.has(vfile.data.filePath!),
       )
 
-      const emitted = await emitter.emit(ctx, files, staticResources)
-      if (Symbol.asyncIterator in emitted) {
-        // Async generator case
-        for await (const file of emitted) {
-          emittedFiles++
-          if (ctx.argv.verbose) {
-            console.log(`[emit:${emitter.name}] ${file}`)
-          }
-        }
-      } else {
-        // Array case
-        emittedFiles += emitted.length
-        if (ctx.argv.verbose) {
-          for (const file of emitted) {
-            console.log(`[emit:${emitter.name}] ${file}`)
-          }
+      const emittedFps = await emitter.emit(ctx, files, staticResources)
+
+      if (ctx.argv.verbose) {
+        for (const file of emittedFps) {
+          console.log(`[emit:${emitter.name}] ${file}`)
         }
       }
 
+      emittedFiles += emittedFps.length
       continue
     }
 
@@ -290,24 +283,15 @@ async function partialRebuildFromEntrypoint(
         .filter((file) => !toRemove.has(file))
         .map((file) => contentMap.get(file)!)
 
-      const emitted = await emitter.emit(ctx, upstreamContent, staticResources)
-      if (Symbol.asyncIterator in emitted) {
-        // Async generator case
-        for await (const file of emitted) {
-          emittedFiles++
-          if (ctx.argv.verbose) {
-            console.log(`[emit:${emitter.name}] ${file}`)
-          }
-        }
-      } else {
-        // Array case
-        emittedFiles += emitted.length
-        if (ctx.argv.verbose) {
-          for (const file of emitted) {
-            console.log(`[emit:${emitter.name}] ${file}`)
-          }
+      const emittedFps = await emitter.emit(ctx, upstreamContent, staticResources)
+
+      if (ctx.argv.verbose) {
+        for (const file of emittedFps) {
+          console.log(`[emit:${emitter.name}] ${file}`)
         }
       }
+
+      emittedFiles += emittedFps.length
     }
   }
 
@@ -375,7 +359,7 @@ async function rebuildFromEntrypoint(
     toRemove.add(filePath)
   }
 
-  const buildId = randomIdNonSecure()
+  const buildId = newBuildId()
   ctx.buildId = buildId
   buildData.lastBuildMs = new Date().getTime()
   const release = await mut.acquire()

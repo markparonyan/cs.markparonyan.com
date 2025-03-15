@@ -266,7 +266,7 @@ export const og: SocialImageOptions["Component"] = (
         alignItems: "flex-start",
         height: "100%",
         width: "100%",
-        backgroundImage: `url("https://${cfg.baseUrl}/static/og-image.jpeg")`,
+        backgroundImage: {% raw %}`url("https://${cfg.baseUrl}/static/og-image.jpeg")`{% endraw %},
         backgroundSize: "100% 100%",
       }}
     >
@@ -295,7 +295,7 @@ export const og: SocialImageOptions["Component"] = (
         }}
       >
         <img
-          src={`"https://${cfg.baseUrl}/static/icon.jpeg"`}
+          src={{% raw %}`"https://${cfg.baseUrl}/static/icon.jpeg"`{% endraw %}}
           style={{
             position: "relative",
             backgroundClip: "border-box",

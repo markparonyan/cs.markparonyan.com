@@ -237,7 +237,7 @@ export type WriteOptions = (data: {
   // the name of the file to emit (not including the file extension)
   slug: FullSlug
   // the file extension
-  ext: `.${string}` | ""
+  ext: {% raw %}`.${string}`{% endraw %} | ""
   // the file content to add
   content: string
 }) => Promise<FilePath>

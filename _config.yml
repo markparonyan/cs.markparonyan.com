@@ -1,0 +1,21 @@
+# Jekyll configuration for GitHub Pages
+exclude:
+  - "node_modules"
+  - "quartz"
+  - "content"
+  - "package.json"
+  - "package-lock.json"
+  - "tsconfig.json"
+  - "quartz.config.ts"
+  - "quartz.layout.ts"
+
+# Treat these folders as having raw content (no Liquid processing)
+include:
+  - "docs"
+
+# Process Markdown files but don't process Liquid in code blocks
+markdown_ext: "md"
+
+# Disable Liquid processing in markdown code blocks
+liquid:
+  error_mode: strict 

@@ -14,7 +14,7 @@ const config: QuartzConfig = {
     enablePopovers: true,
     analytics: null,
     locale: "ru-RU",
-    baseUrl: "chernov.wiki",
+    baseUrl: "markparonyan.com",
     ignorePatterns: ["private", ".obsidian"],
     defaultDateType: "modified",
     generateSocialImages: true,

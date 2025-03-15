@@ -563,7 +563,13 @@ export async function handleSync(argv) {
   await popContentFolder(contentFolder)
   if (argv.push) {
     console.log("Pushing your changes")
-    const res = spawnSync("git", ["push", "-uf", ORIGIN_NAME, QUARTZ_SOURCE_BRANCH], {
+    // Get current branch name instead of using QUARTZ_SOURCE_BRANCH
+    const getCurrentBranch = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
+      encoding: "utf-8",
+    })
+    const currentBranch = getCurrentBranch.stdout.trim()
+    
+    const res = spawnSync("git", ["push", "-uf", ORIGIN_NAME, currentBranch], {
       stdio: "inherit",
     })
     if (res.status !== 0) {

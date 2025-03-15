@@ -7,7 +7,7 @@ Quartz can also dynamically generate and use new cover images for every page to 
 
 ## Showcase
 
-After enabling `generateSocialImages` in `quartz.config.ts`, the social media link preview for [[authoring content | Authoring Content]] looks like this:
+After enabling `generateSocialImages` in `quartz.config.ts`, the social media link preview for [[authoring content | Authoring Content]] looks like this:
 
 | Light                               | Dark                               |
 | ----------------------------------- | ---------------------------------- |
@@ -133,11 +133,11 @@ export const myImage: SocialImageOptions["imageStructure"] = (...) => {
 >   const headerWeight: FontWeight = 700
 >   const bodyWeight: FontWeight = 400
 >
->   const url = new URL(`https://${cfg.baseUrl ?? "example.com"}`)
+>   const url = new URL({% raw %}`https://${cfg.baseUrl ?? "example.com"}`{% endraw %})
 >
 >   const [header, body] = await Promise.all(
 >     [headerFont, bodyFont].map((font) =>
->       fetch(`${url.toString()}/${font}`).then((res) => res.arrayBuffer()),
+>       fetch({% raw %}`${url.toString()}/${font}`{% endraw %}).then((res) => res.arrayBuffer()),
 >     ),
 >   )
 >
@@ -307,7 +307,7 @@ export const customImage: SocialImageOptions["imageStructure"] = (
 >         alignItems: "flex-start",
 >         height: "100%",
 >         width: "100%",
->         backgroundImage: `url("https://${cfg.baseUrl}/static/og-image.jpeg")`,
+>         backgroundImage: {% raw %}`url("https://${cfg.baseUrl}/static/og-image.jpeg")`{% endraw %},
 >         backgroundSize: "100% 100%",
 >       }}
 >     >
@@ -336,7 +336,7 @@ export const customImage: SocialImageOptions["imageStructure"] = (
 >         }}
 >       >
 >         <img
->           src={`"https://${cfg.baseUrl}/static/icon.jpeg"`}
+>           src={{% raw %}`"https://${cfg.baseUrl}/static/icon.jpeg"`{% endraw %}}
 >           style={{
 >             position: "relative",
 >             backgroundClip: "border-box",

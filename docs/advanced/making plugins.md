@@ -236,9 +236,9 @@ export type WriteOptions = (data: {
   // the build context
   ctx: BuildCtx
   // the name of the file to emit (not including the file extension)
-  slug: ServerSlug
+  slug: FullSlug
   // the file extension
-  ext: `.${string}` | ""
+  ext: {% raw %}`.${string}`{% endraw %} | ""
   // the file content to add
   content: string
 }) => Promise<FilePath>

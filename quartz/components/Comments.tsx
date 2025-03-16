@@ -7,7 +7,7 @@ import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 function Footer(props: QuartzComponentProps) {
   return (
     <script src="https://giscus.app/client.js"
-        data-repo="kumailr7/Opscatalyst"
+        data-repo="markparonyan/Opscatalyst"
         data-repo-id="R_kgDOMl4JxQ"
         data-category="General"
         data-category-id="DIC_kwDOMl4Jxc4Ch08m"

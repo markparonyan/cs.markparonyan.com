@@ -1,17 +1,18 @@
 ---
 Author:
-  - Kumail Rizvi
+  - Mark Paronyan
 Author Profile:
-  - https://linkedin.com/in/kumail-rizvi
+  - https://markparonyan.com
 tags:
   - Readme
-Creation Date: 2024-08-22T11:38:48
+Creation Date: 2024-03-16T00:00:00
 Last Date: 2024-08-22T11:38:48
 DocID: RM-24
-drafts: 
-References: 
+drafts:
+References:
 description:
 ---
+
 # Ops-Catalyst Blog 🎓
 
 Welcome to **Ops-Catalyst**, a blog dedicated to my DevOps journey and knowledge sharing. Here, you'll find a variety of content ranging from beginner-friendly guides to advanced tutorials, all crafted to help you master the essential tools and technologies in the DevOps world.

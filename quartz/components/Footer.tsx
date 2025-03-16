@@ -19,7 +19,7 @@ export default ((opts?: Options) => {
         <hr />
         <p>
           {i18n(cfg.locale).components.footer.createdWith}{" "}
-          <a href="https://www.linkedin.com/in/kumail-rizvi/">Kumail Rizvi</a>, © {currYear}
+          <a href="https://markparonyan.com">Mark Paronyan</a>, © {currYear}
         </p>
         <ul>
           {Object.entries(links).map(([text, link]) => (

@@ -4,20 +4,11 @@ import * as Component from "./quartz/components"
 // components shared across all pages
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
-  navbar: [
-    Component.Darkmode(),
-    Component.Search(),
-  ],
   header: [],
-  afterBody: [
-    // Component.Backlinks()
-  ],
+  afterBody: [Component.Comments()],
   footer: Component.Footer({
     links: {
-      "Blog": "https://vanadium23.me/",
-      "Telegram": "https://t.me/chernov_sharit",
-      "GitHub": "https://github.com/vanadium23",
-      "Design": "https://owickstrom.github.io/the-monospace-web/"
+      GitHub: "https://github.com/markparonyan/notes.markparonyan.com"
     },
   }),
 }
@@ -27,25 +18,49 @@ export const defaultContentPageLayout: PageLayout = {
   beforeBody: [
     Component.Breadcrumbs(),
     Component.ArticleTitle(),
-    Component.ContentMeta(),
-    Component.TagList(),
+    Component.ContentMeta({showReadingTime:true}),
+    Component.TagList(), 
+    Component.Author(),
   ],
   left: [
-    Component.DesktopOnly(Component.TableOfContents()),
+    Component.PageTitle(),
+    Component.MobileOnly(Component.Spacer()),
+    Component.Search(),
+    Component.MobileOnly(Component.Darkmode()),
+    Component.DesktopOnly(Component.RecentNotes({ linkToMore: "tags/" , limit: 3, showTags: false })),
+    Component.DesktopOnly(Component.Explorer()),
   ],
   right: [
+    // Component.MobileOnly(Component.Explorer()),
+    Component.DesktopOnly(Component.Darkmode()),
+    Component.DesktopOnly(Component.TableOfContents()),
     Component.Backlinks(),
-  ]
+    Component.Graph(),
+  ],
 }
 
 // components for pages that display lists of pages  (e.g. tags or folders)
 export const defaultListPageLayout: PageLayout = {
   beforeBody: [Component.Breadcrumbs(), Component.ArticleTitle(), Component.ContentMeta()],
   left: [
-    Component.DesktopOnly(Component.RecentNotes({
-      limit: 5,
-      showTags: false,
-    })),
+    Component.PageTitle(),
+    Component.MobileOnly(Component.Spacer()),
+    Component.Search(),
+    Component.Darkmode(),
+    Component.DesktopOnly(Component.Explorer()),
   ],
   right: [],
 }
+
+Component.Explorer({
+  sortFn: (a, b) => {
+    if ((!a.file && !b.file) || (a.file && b.file)) {
+      return a.displayName.localeCompare(b.displayName)
+    }
+    if (a.file && !b.file) {
+      return -1
+    } else {
+      return 1
+    }
+  },
+})

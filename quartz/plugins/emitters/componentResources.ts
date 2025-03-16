@@ -76,7 +76,7 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     componentResources.afterDOMLoaded.push(popoverScript)
     componentResources.css.push(popoverStyle)
   }
-
+/*
   if (cfg.analytics?.provider === "google") {
     const tagId = cfg.analytics.tagId
     componentResources.afterDOMLoaded.push(`
@@ -96,6 +96,25 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
           page_location: location.href,
         });
       });`)
+
+      // Add in another 1 - umami cloud
+      componentResources.afterDOMLoaded.push(`
+      const umamiScript = document.createElement("script")
+      umamiScript.src = "https://analytics.umami.is/script.js"
+      umamiScript.setAttribute("data-website-id", "5cc5e1c4-8202-4eed-b059-f4867a8f7f0b")
+      umamiScript.async = true
+  
+      document.head.appendChild(umamiScript)
+    `)
+    // Add in another 1 - umami self host
+    componentResources.afterDOMLoaded.push(`
+    const umamiScript = document.createElement("script")
+    umamiScript.src = "https://notess.yxy.ninja/pxsd83yn"
+    umamiScript.setAttribute("data-website-id", "339ec462-99c5-450f-a994-9b452857c5d7")
+    umamiScript.async = true
+
+    document.head.appendChild(umamiScript)
+  `)
   } else if (cfg.analytics?.provider === "plausible") {
     const plausibleHost = cfg.analytics.host ?? "https://plausible.io"
     componentResources.afterDOMLoaded.push(`
@@ -147,22 +166,13 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
   } else if (cfg.analytics?.provider === "cabin") {
     componentResources.afterDOMLoaded.push(`
       const cabinScript = document.createElement("script")
-      cabinScript.src = "${cfg.analytics.host ?? "https://scripts.withcabin.com"}/hello.js"
+      cabinScript.src = "${cfg.analytics.host ?? "https://scripts.cabin.dev"}/cabin.js"
       cabinScript.defer = true
       cabinScript.async = true
       document.head.appendChild(cabinScript)
     `)
-  } else if (cfg.analytics?.provider === "clarity") {
-    componentResources.afterDOMLoaded.push(`
-      const clarityScript = document.createElement("script")
-      clarityScript.innerHTML= \`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "${cfg.analytics.projectId}");\`
-      document.head.appendChild(clarityScript)
-    `)
   }
-
+*/
   if (cfg.enableSPA) {
     componentResources.afterDOMLoaded.push(spaRouterScript)
   } else {

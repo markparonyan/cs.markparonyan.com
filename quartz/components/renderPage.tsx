@@ -2,7 +2,6 @@ import { render } from "preact-render-to-string"
 import { QuartzComponent, QuartzComponentProps } from "./types"
 import HeaderConstructor from "./Header"
 import BodyConstructor from "./Body"
-import NavbarContructor from "./Navbar";
 import { JSResourceToScriptElement, StaticResources } from "../util/resources"
 import { clone, FullSlug, RelativeURL, joinSegments, normalizeHastElement } from "../util/path"
 import { visit } from "unist-util-visit"
@@ -12,7 +11,6 @@ import { i18n } from "../i18n"
 
 interface RenderComponents {
   head: QuartzComponent
-  navbar: QuartzComponent[]
   header: QuartzComponent[]
   beforeBody: QuartzComponent[]
   pageBody: QuartzComponent
@@ -31,12 +29,7 @@ export function pageResources(
   const contentIndexScript = `const fetchData = fetch("${contentIndexPath}").then(data => data.json())`
 
   return {
-    css: [
-      {
-        content: joinSegments(baseDir, "index.css"),
-      },
-      ...staticResources.css,
-    ],
+    css: [joinSegments(baseDir, "index.css"), ...staticResources.css],
     js: [
       {
         src: joinSegments(baseDir, "prescript.js"),
@@ -192,7 +185,6 @@ export function renderPage(
 
   const {
     head: Head,
-    navbar,
     header,
     beforeBody,
     pageBody: Content,
@@ -203,7 +195,7 @@ export function renderPage(
   } = components
   const Header = HeaderConstructor()
   const Body = BodyConstructor()
-  const Navbar = NavbarContructor()
+  
 
   const LeftComponent = (
     <div class="left sidebar">
@@ -227,11 +219,6 @@ export function renderPage(
       <Head {...componentData} />
       <body data-slug={slug}>
         <div id="quartz-root" class="page">
-          <Navbar {...componentData}>
-            {navbar.map((NavbarComponent) => (
-              <NavbarComponent displayClass="nav-link" {...componentData} />
-            ))}
-            </Navbar>
           <Body {...componentData}>
             {LeftComponent}
             <div class="center">
@@ -242,13 +229,14 @@ export function renderPage(
                   ))}
                 </Header>
                 <div class="popover-hint">
-                  {beforeBody.map((BodyComponent) => (
+                  {slug !== "index" && slug !== "about" && beforeBody.map((BodyComponent) => (
                     <BodyComponent {...componentData} />
                   ))}
                 </div>
               </div>
               <Content {...componentData} />
-              <hr />
+              
+              {/* <hr class="footerHr"/> */}
               <div class="page-footer">
                 {afterBody.map((BodyComponent) => (
                   <BodyComponent {...componentData} />
@@ -256,8 +244,8 @@ export function renderPage(
               </div>
             </div>
             {RightComponent}
-            <Footer {...componentData} />
           </Body>
+          <Footer {...componentData} />
         </div>
       </body>
       {pageResources.js
